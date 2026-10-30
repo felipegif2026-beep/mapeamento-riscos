@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapeamento de Risco em Obras - V8.8 BI Analytics</title>
+
+<!-- Leaflet CSS e JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Chart.js para Gráficos Dinâmicos -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Segoe UI',Tahoma,sans-serif;
+background:#0f172a;
+color:#fff;
+overflow-x:hidden;
+}
+
+header{
+height:60px;
+padding:15px 20px;
+background:#111827;
+font-size:22px;
+font-weight:700;
+color:#38bdf8;
+display:flex;
+align-items:center;
+border-bottom:1px solid #334155;
+}
+
+.wrap{
+display:flex;
+height:calc(100vh - 60px);
+width: 100vw;
+overflow: hidden;
+}
+
+/* Área do Mapa */
+#map{
+flex: 1;
+height: 100%;
+min-width: 350px;
+background: #1e293b;
+position: relative;
+z-index: 1;
+}
+
+/* Painel Analítico Principal */
+.side{
+flex: 2;
+height: 100%;
+overflow-y: auto;
+background: #1e293b;
+padding: 16px;
+z-index: 2;
+}
+
+.card{
+background:#071a4a;
+border:1px solid #334155;
+border-radius:12px;
+padding:14px;
+margin-bottom:12px;
+}
+
+.card h3{
+margin-bottom:12px;
+color:#ffffff;
+font-size:15px;
+border-bottom:1px solid #1e293b;
+padding-bottom:6px;
+}
+
+.card b{
+display:block;
+margin-bottom:8px;
+color:#cbd5e1;
+}
+
+select{
+width:100%;
+padding:10px;
+border-radius:8px;
+background:#0f172a;
+color:#fff;
+border:1px solid #334155;
+font-size:14px;
+}
+
+select:focus{
+outline:none;
+border-color:#38bdf8;
+}
+
+/* Container Dinâmico de KPIs por Empresa */
+.kpis-container {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+margin-bottom: 12px;
+transition: all 0.3s ease;
+}
+
+.kpis-container.single-column {
+grid-template-columns: 1fr;
+}
+
+.kpi-group-title {
+font-size: 15px;
+font-weight: bold;
+margin-bottom: 10px;
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.kpis{
+display:grid;
+grid-template-columns: repeat(4, 1fr);
+gap:8px;
+}
+
+.kpi-card{
+padding:10px 6px;
+border-radius:8px;
+text-align:center;
+font-weight:600;
+font-size: 12px;
+}
+
+.kpi{
+font-size:20px;
+font-weight:700;
+margin-top:2px;
+}
+
+.blue{ background:#1e40af; }
+.green{ background:#166534; }
+.red{ background:#991b1b; }
+.purple{ background:#581c87; }
+
+/* Gráficos Lado a Lado */
+.charts-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+margin-bottom: 12px;
+}
+
+.chart-container {
+position: relative;
+height: 200px;
+width: 100%;
+}
+
+.item{
+padding:8px 10px;
+border-bottom:1px solid #334155;
+font-size:13px;
+line-height:1.4;
+}
+
+.item:last-child{
+border-bottom:none;
+}
+
+.badge-count {
+float: right;
+background: #334155;
+padding: 2px 8px;
+border-radius: 12px;
+font-size: 12px;
+font-weight: bold;
+}
+
+.status-critico{ color:#ef4444; font-weight:bold; }
+.status-alto{ color:#f97316; font-weight:bold; }
+.status-medio{ color:#eab308; font-weight:bold; }
+.status-controlado{ color:#22c55e; font-weight:bold; }
+
+/* Estilização da Ficha de Resumo da Obra */
+.ficha-obra {
+background: #0b1329;
+border: 1px solid #1e3a8a;
+border-radius: 8px;
+padding: 12px;
+font-size: 13px;
+line-height: 1.5;
+}
+
+.ficha-header {
+font-size: 15px;
+font-weight: bold;
+color: #38bdf8;
+border-bottom: 1px solid #334155;
+padding-bottom: 6px;
+margin-bottom: 10px;
+}
+
+.ficha-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 10px;
+margin-bottom: 10px;
+}
+
+.ficha-item {
+background: #0f172a;
+padding: 8px;
+border-radius: 6px;
+border: 1px solid #1e293b;
+}
+
+.ficha-detalhe {
+background: #0f172a;
+padding: 10px;
+border-radius: 6px;
+border-left: 3px solid #38bdf8;
+margin-top: 8px;
+color: #cbd5e1;
+}
+
+.ficha-ro {
+background: #0f172a;
+padding: 10px;
+border-radius: 6px;
+border-left: 3px solid #f97316;
+margin-top: 8px;
+color: #cbd5e1;
+}
+
+/* Estilização Popup Leaflet */
+.leaflet-popup-content-wrapper {
+background: #0f172a;
+color: #fff;
+border: 1px solid #38bdf8;
+border-radius: 8px;
+}
+
+.leaflet-popup-tip {
+background: #0f172a;
+}
+
+.leaflet-popup-content{
+font-size:13px;
+line-height:1.4;
+}
+
+@media(max-width:1100px){
+.kpis{
+grid-template-columns: repeat(2, 1fr);
+}
+}
+
+@media(max-width:900px){
+body{
+overflow-y: auto;
+}
+
+.wrap{
+flex-direction:column;
+height:auto;
+overflow: visible;
+}
+
+#map{
+height:400px;
+width: 100%;
+}
+
+.side{
+width:100%;
+height: auto;
+overflow: visible;
+}
+
+.kpis-container{
+grid-template-columns: 1fr !important;
+}
+
+.charts-grid{
+grid-template-columns: 1fr;
+}
+
+.ficha-grid {
+grid-template-columns: 1fr;
+}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+📍 Mapeamento de Risco em Obras - V8.8 BI Analytics
+</header>
+
+<div class="wrap">
+
+<!-- Mapa Menor (Lado Esquerdo) -->
+<div id="map"></div>
+
+<!-- Painel Analítico Expandido (Lado Direito) -->
+<div class="side">
+
+<!-- Filtros No Topo do Painel -->
+<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+<div class="card" style="border-color: #38bdf8; margin-bottom:0;">
+<b>🗓️ Período / Mês</b>
+<select id="mes" onchange="aplicarFiltros()">
+<option value="all">Todos (Set/Out)</option>
+<option value="Setembro">Setembro / 2026</option>
+<option value="Outubro">Outubro / 2026</option>
+</select>
+</div>
+
+<div class="card" style="margin-bottom:0;">
+<b>Empresa</b>
+<select id="empresa" onchange="aoMudarEmpresa()">
+<option value="all">Todas as Empresas</option>
+<option value="Always">Always</option>
+<option value="TRS">TR&S</option>
+</select>
+</div>
+
+<div class="card" style="margin-bottom:0;">
+<b>Obra</b>
+<select id="obra" onchange="aplicarFiltros()">
+<option value="all">Todas as Obras</option>
+</select>
+</div>
+</div>
+
+<!-- KPIs Dinâmicos Vinculados ao Filtro de Empresa -->
+<div class="kpis-container" id="kpisContainer">
+    <!-- Bloco TR&S -->
+    <div class="card" id="cardTRS" style="margin-bottom:0; padding:12px;">
+        <div class="kpi-group-title" style="color:#38bdf8;">🏢 TR&S Analytics</div>
+        <div class="kpis">
+            <div class="kpi-card blue">
+                <div>Total Obras</div>
+                <div class="kpi" id="kpiTotalTRS">12</div>
+            </div>
+            <div class="kpi-card purple">
+                <div>ROs Elaborados</div>
+                <div class="kpi" id="kpiROsTRS">6</div>
+            </div>
+            <div class="kpi-card red">
+                <div>Obras Críticas</div>
+                <div class="kpi" id="kpiCriticasTRS">1</div>
+            </div>
+            <div class="kpi-card green">
+                <div>Obras Controladas</div>
+                <div class="kpi" id="kpiControladasTRS">11</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bloco Always -->
+    <div class="card" id="cardAlways" style="margin-bottom:0; padding:12px;">
+        <div class="kpi-group-title" style="color:#f97316;">🏢 Always Analytics</div>
+        <div class="kpis">
+            <div class="kpi-card blue">
+                <div>Total Obras</div>
+                <div class="kpi" id="kpiTotalAlways">11</div>
+            </div>
+            <div class="kpi-card purple">
+                <div>ROs Elaborados</div>
+                <div class="kpi" id="kpiROsAlways">1</div>
+            </div>
+            <div class="kpi-card red">
+                <div>Obras Críticas</div>
+                <div class="kpi" id="kpiCriticasAlways">3</div>
+            </div>
+            <div class="kpi-card green">
+                <div>Obras Controladas</div>
+                <div class="kpi" id="kpiControladasAlways">1</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resumo Selecionado -->
+<div class="card">
+<h3 id="tituloResumo">📋 Resumo Geral</h3>
+<div id="textoResumo">Exibindo todas as obras mapeadas.</div>
+</div>
+
+<!-- Gráficos Analíticos (Chart.js) -->
+<div class="charts-grid">
+<div class="card" style="margin-bottom:0;">
+<h3>📈 Distribuição de Riscos por Nível</h3>
+<div class="chart-container">
+<canvas id="riskChart"></canvas>
+</div>
+</div>
+
+<div class="card" style="margin-bottom:0;">
+<h3>📊 Relatórios de Ocorrência (RO) por Empresa</h3>
+<div class="chart-container">
+<canvas id="roChart"></canvas>
+</div>
+</div>
+</div>
+
+<!-- Status e Ranking -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+<div class="card" style="margin-bottom:0;">
+<h3>🏢 Status de ROs por Empresa</h3>
+<div class="item">
+<b>TR&S:</b> <span style="color:#38bdf8; font-weight:bold;">Possui ROs</span> <span class="badge-count" id="roTRS">6 ROs</span>
+</div>
+<div class="item">
+<b>Always:</b> <span style="color:#f97316; font-weight:bold;">Possui 1 RO</span> <span class="badge-count" id="roAlways">1 RO</span>
+</div>
+</div>
+
+<div class="card" style="margin-bottom:0;">
+<h3>📊 Distribuição do Ranking Residual</h3>
+<div class="item">🔴 <span class="status-critico">Crítico (Res. 29):</span> <span class="badge-count" id="cntCritico">4 Obras</span></div>
+<div class="item">🟠 <span class="status-alto">Alto (Res. 18 - 24):</span> <span class="badge-count" id="cntAlto">2 Obras</span></div>
+<div class="item">🟡 <span class="status-medio">Médio (Res. 15):</span> <span class="badge-count" id="cntMedio">6 Obras</span></div>
+<div class="item">🟢 <span class="status-controlado">Controlado (Res. 2 - 5):</span> <span class="badge-count" id="cntControlado">12 Obras</span></div>
+</div>
+</div>
+
+<!-- Inconsistências e Mitigações Dinâmicas por Filtro -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+<div class="card" style="margin-bottom:0;">
+<h3 id="tituloInconsistencias">⚠️ Principais Inconsistências Recorrentes</h3>
+<div id="listaInconsistencias"></div>
+</div>
+
+<div class="card" style="margin-bottom:0;">
+<h3 id="tituloMitigações">🛡️ Principais Ações de Mitigação</h3>
+<div id="listaMitigacoes"></div>
+</div>
+</div>
+
+<!-- Legenda -->
+<div class="card">
+<h3>🎯 Legenda do Mapa</h3>
+<div style="display: flex; gap: 15px; flex-wrap: wrap;">
+<div class="item" style="border:none;">🔴 <span class="status-critico">Crítico</span></div>
+<div class="item" style="border:none;">🟠 <span class="status-alto">Alto</span></div>
+<div class="item" style="border:none;">🟡 <span class="status-medio">Médio</span></div>
+<div class="item" style="border:none;">🟢 <span class="status-controlado">Controlado</span></div>
+<div class="item" style="border:none;">🔵 <span style="color:#38bdf8; font-weight:bold;">Com RO (Azul)</span></div>
+</div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+const obras = {
+'593':{ 
+    empresa:'Always', mes:'Setembro', nome:'593 • Itapecerica da Serra (Vistoria 001/2026)', coord:[-23.731,-46.858], risco:'Crítico', cor:'#ef4444', ro:'Sem RO', temRO:false, corPin:'#ef4444',
+    diagnosticoVistoria: 'Ausência total de supervisão presencial dedicada. Identificados desvios graves de EPIs e falta de emissão de ROs obrigatórios. Área com histórico de vulnerabilidade patrimonial.',
+    detalheRO: 'Nenhum Relatório de Ocorrência registrado para esta frente no período.',
+    recomendacao: 'Alocação imediata de supervisor fixo em campo e paralisação temporária das atividades até regularização documental de segurança.'
+},
+'608':{ 
+    empresa:'Always', mes:'Setembro', nome:'608 • Taboão da Serra (Sem RO)', coord:[-23.623,-46.785], risco:'Alto', cor:'#f97316', ro:'Sem RO', temRO:false, corPin:'#f97316',
+    diagnosticoVistoria: 'Inconsistências no cumprimento de procedimentos operacionais padrão e falta de comunicação via canais oficiais. Risco residual elevado devido à falta de acompanhamento de campo.',
+    detalheRO: 'Sem ocorrências formais registradas.',
+    recomendacao: 'Realizar auditoria presencial emergencial e estabelecer checklist obrigatório de início de jornada.'
+},
+'609':{ 
+    empresa:'Always', mes:'Setembro', nome:'609 • Chácara Santo Antônio (Sem RO)', coord:[-23.641,-46.695], risco:'Crítico', cor:'#ef4444', ro:'Sem RO', temRO:false, corPin:'#ef4444',
+    diagnosticoVistoria: 'Obra em região urbana adensada com alto risco patrimonial e desvios operacionais recorrentes. Inexistência de Relatório de Ocorrência enviado.',
+    detalheRO: 'Sem histórico de RO emitido.',
+    recomendacao: 'Reforço de vigilância preventivo, aplicação de validação biométrica e credenciamento rigoroso da equipe.'
+},
+'619':{ 
+    empresa:'Always', mes:'Setembro', nome:'619 • Santo Amaro (Sem RO)', coord:[-23.656,-46.696], risco:'Controlado', cor:'#22c55e', ro:'Sem RO', temRO:false, corPin:'#22c55e',
+    diagnosticoVistoria: 'Operação dentro dos padrões técnicos mínimos, porém sem registro oficial via RO. Risco controlado operacionalmente.',
+    detalheRO: 'Sem RO gerado.',
+    recomendacao: 'Formalizar os registros diários de segurança para manter o status controlado no sistema.'
+},
+'631':{ 
+    empresa:'TRS', mes:'Outubro', nome:'631 • Ibirapuera Noturno (R. Estados Unidos, 548)', coord:[-23.5682,-46.6631], risco:'Controlado', cor:'#22c55e', ro:'Com RO', temRO:true, corPin:'#1e3a8a',
+    diagnosticoVistoria: 'Trabalho noturno monitorado com acompanhamento técnico presencial.',
+    detalheRO: 'Relatório de Ocorrência (RO) devidamente elaborado e validado para acompanhamento da atividade noturna.',
+    recomendacao: 'Manter o protocolo noturno vigente com atenção redobrada à iluminação do canteiro e sinalização viária.'
+},
+'632':{ 
+    empresa:'TRS', mes:'Outubro', nome:'632 • Tremembé (Relatório 021/2026)', coord:[-23.472,-46.612], risco:'Médio', cor:'#eab308', ro:'Sem RO (Vistoria 021/2026)', temRO:false, corPin:'#eab308',
+    diagnosticoVistoria: 'Atuação regular da agente Cleide, porém identificada resistência da equipe técnica da VIVO quanto a registros fotográficos no WhatsApp. Furgão de transporte sem ajudante de carga e sem sistema de lacração.',
+    detalheRO: 'Sem RO registrado (Acompanhado via Relatório de Vistoria 021/2026).',
+    recomendacao: 'Manutenção dos controles pela agente, exigência do cumprimento das diretrizes fotográficas e reporte imediato à supervisão.'
+},
+'633':{ 
+    empresa:'TRS', mes:'Outubro', nome:'633 • Jardim Bonfiglioli (Sem RO)', coord:[-23.574,-46.724], risco:'Controlado', cor:'#22c55e', ro:'Sem RO', temRO:false, corPin:'#22c55e',
+    diagnosticoVistoria: 'Atividade sem ocorrências graves registradas. Boa conformidade quanto ao uso de EPIs pelas equipes de campo.',
+    detalheRO: 'Sem RO emitido.',
+    recomendacao: 'Solicitar emissão periódica do RO para acompanhamento do ranking residual.'
+},
+'636':{ 
+    empresa:'TRS', mes:'Outubro', nome:'636 • Campo Limpo Noturno (Sem RO)', coord:[-23.648,-46.758], risco:'Controlado', cor:'#22c55e', ro:'Sem RO', temRO:false, corPin:'#22c55e',
+    diagnosticoVistoria: 'Serviço noturno executado dentro da normalidade operacional. Equipes devidamente credenciadas.',
+    detalheRO: 'Sem ocorrências registradas.',
+    recomendacao: 'Reforçar monitoramento nos horários de troca de turno.'
+},
+'642_1':{ 
+    empresa:'Always', mes:'Outubro', nome:'642 • Osasco Rochdalle - Eq. 1 / Rua Cisne (Relatório 018/2026)', coord:[-23.518,-46.782], risco:'Controlado', cor:'#22c55e', ro:'Sem RO (Vistoria 018/2026)', temRO:false, corPin:'#22c55e',
+    diagnosticoVistoria: 'Acesso restrito em via estreita (Rua Cisne) exigindo separação perimetral: caminhão alocado em rua adjacente sob guarda dedicada do Agente Valdivino, enquanto Agente Kaique acompanhava técnicos da VIVO. Conformidade integral.',
+    detalheRO: 'Sem RO gerado.',
+    recomendacao: 'Manter a adaptação tática em vias de dimensões reduzidas para garantir a segurança da carga e dos técnicos.'
+},
+'642_2':{ 
+    empresa:'Always', mes:'Outubro', nome:'642 • Osasco Rochdalle - Eq. 2 / Rua Parapuã (Relatório 017/2026)', coord:[-23.521,-46.785], risco:'Médio', cor:'#eab308', ro:'Sem RO (Vistoria 017/2026)', temRO:false, corPin:'#eab308',
+    diagnosticoVistoria: 'Acompanhamento da equipe com veículo Voyage e carroçaria de cabos. Continuidade da alocação do agente Jean Carlos Tobias Pereira com pendência de validação cadastral funcional prévia.',
+    detalheRO: 'Sem RO emitido.',
+    recomendacao: 'Solicitar à empresa Always a confirmação e regularização do cadastro funcional do prestador Jean Carlos.'
+},
+'642_3':{ 
+    empresa:'Always', mes:'Outubro', nome:'642 • Osasco Rochdalle - EQ3 / Rua Guia (Relatório 016/2026)', coord:[-23.524,-46.788], risco:'Médio', cor:'#eab308', ro:'Sem RO (Vistoria 016/2026)', temRO:false, corPin:'#eab308',
+    diagnosticoVistoria: 'Troca de última hora (Willian Diniz no lugar de Emerson). Desconhecimento prévio sobre diretriz de fotos de fios pendurados e dados desatualizados no grupo oficial.',
+    detalheRO: 'Sem RO registrado.',
+    recomendacao: 'Realizar reciclagem e instrução obrigatória de agentes substitutos antes da alocação e exigir validação prévia de escala.'
+},
+'646_1':{ 
+    empresa:'TRS', mes:'Outubro', nome:'646 • Jaraguá Subterrânea (RO Subterrâneo)', coord:[-23.442,-46.732], risco:'Controlado', cor:'#22c55e', ro:'Com RO', temRO:true, corPin:'#1e3a8a',
+    diagnosticoVistoria: 'Atividade subterrânea de alta complexidade supervisionada.',
+    detalheRO: 'RO específico de espaço confinado/subterrâneo preenchido corretamente.',
+    recomendacao: 'Manter rigoroso controle de ventilação, detecção de gases e comunicação via rádio.'
+},
+'646_2':{ 
+    empresa:'TRS', mes:'Outubro', nome:'646 • Jaraguá Equipe 2 (RO 004/2026)', coord:[-23.445,-46.735], risco:'Controlado', cor:'#22c55e', ro:'Com RO (RO 004/2026)', temRO:true, corPin:'#1e3a8a',
+    diagnosticoVistoria: 'Equipe operando em conformidade com as normas técnicas. Supervisão presencial atuante.',
+    detalheRO: 'RO 004/2026 emitido e validado com sucesso.',
+    recomendacao: 'Manter a rotina de Diálogo Diário de Segurança (DDS).'
+},
+'649':{ 
+    empresa:'Always', mes:'Outubro', nome:'649 • 1 AG Adventista _ 11000DV (Vistoria 014/2026)', coord:[-23.6552,-46.7712], risco:'Médio', cor:'#eab308', ro:'Sem RO (Vistoria 014/2026)', temRO:false, corPin:'#eab308',
+    diagnosticoVistoria: 'Divergência na validação cadastral do prestador em campo (CPF não validado no sistema da gestão no momento da verificação) e postura inicial distante/pouco interativa.',
+    detalheRO: 'Sem RO gerado no período.',
+    recomendacao: 'Validação e regularização cadastral imediata junto à prestadora Always e gestão da operação antes de novas liberações de serviço.'
+},
+'650':{ 
+    empresa:'Always', mes:'Outubro', nome:'650 • Obra Rifaina Nº 650-003 (PR Adventista - Noturna)', coord:[-23.6520,-46.7620], risco:'Crítico', cor:'#ef4444', ro:'Com RO (Furto e Ameaça)', temRO:true, corPin:'#1e3a8a',
+    diagnosticoVistoria: 'Acompanhamento de frente noturna de retirada, esticamento e corte de cabos na via pública.',
+    detalheRO: 'Ocorrência em 23/10/2026 às 22h30: Dois veículos não identificados interceptaram a frente e subtraíram 4 pedaços de cabo. Ocupantes proferiram ameaças verbais aos agentes de segurança e manifestaram intenção de tomar a carga do caminhão. Ação contida sem confronto direto para preservação física.',
+    recomendacao: 'Manutenção de monitoramento reforçado em frentes noturnas vulneráveis, alocação de apoio operacional imediato e diretriz rigorosa de não confronto direto.'
+},
+'658':{ 
+    empresa:'Always', mes:'Outubro', nome:'658 • Obra Rifaina Guarulhos/Nazaré (Av. Coqueiral)', coord:[-23.451,-46.522], risco:'Alto', cor:'#f97316', ro:'Com Vistoria (Relatório 019/2026) - Sem RO', temRO:false, corPin:'#f97316',
+    diagnosticoVistoria: 'Relatório de Vistoria 019/2026: Acompanhamento conjunto de escolta de cabos pelo agente Cláudio Farias Cardoso. Operação em área próxima a comunidade com efetivo reduzido por frente.',
+    detalheRO: 'Informação informada pelo colaborador Ricardo (Icomon) sobre subtração de segmento de cabo no caminhão na Av. Coqueiral (Sem emissão formal de RO pela Always para este evento específico).',
+    recomendacao: 'Reforço de vigilância patrimonial contínua nos veículos logísticos de transporte de cabos e comunicação imediata à supervisão de segurança.'
+},
+'656_2':{ 
+    empresa:'TRS', mes:'Outubro', nome:'656 • Rifaina / Quitaúna - Osasco Eq. 2 (Relatório 015/2026)', coord:[-23.530,-46.775], risco:'Médio', cor:'#eab308', ro:'Com RO (RO 015/2026)', temRO:true, corPin:'#1e3a8a',
+    diagnosticoVistoria: 'Agente Márcio Jorge Melanda em escolta de cabos expostos na Rua Mãe Joana Zonca aguardando suporte logístico.',
+    detalheRO: 'RO 015/2026 emitido devido à vulnerabilidade por exposição de material em via pública.',
+    recomendacao: 'Manutenção da postura de vigilância ativa e presença constante do agente junto ao material até o efetivo carregamento.'
+},
+'659':{ 
+    empresa:'TRS', mes:'Outubro', nome:'659 • Rifaina / Guarulhos-Bonsucesso (Relatório 020/2026)', coord:[-23.435,-46.448], risco:'Crítico', cor:'#ef4444', ro:'Sem RO (Vistoria 020/2026)', temRO:false, corPin:'#ef4444',
+    diagnosticoVistoria: 'Constatado agente Silvio Luis Mariz cochilando no interior do veículo de apoio durante proteção patrimonial da carga. Fadiga decorrente de atuação em outra operação na madrugada (Rifaina Brás). Caminhão estacionado em via de grande fluxo.',
+    detalheRO: 'Sem RO emitido (Registrado em Relatório de Vistoria 020/2026).',
+    recomendacao: 'Revisão imediata das escalas de trabalho, controle dos períodos de descanso entre jornadas e adoção de mecanismos de prevenção à fadiga.'
+},
+'663':{ 
+    empresa:'TRS', mes:'Outubro', nome:'663 • Rifaina / Guarulhos-Nazaré (Relatório 019/2026)', coord:[-23.448,-46.530], risco:'Médio', cor:'#eab308', ro:'Sem RO (Vistoria 019/2026)', temRO:false, corPin:'#eab308',
+    diagnosticoVistoria: 'Agente Michael Tavares Santiago em escolta e vigilância de caminhões com cabos recolhidos na Rua São Bento Trairi. Operação próxima a comunidade com efetivo reduzido por frente de trabalho.',
+    detalheRO: 'Sem RO gerado no período.',
+    recomendacao: 'Manutenção da presença vigilante e contínua dos agentes junto aos veículos e acompanhamento integral do transbordo das cargas.'
+},
+'600_1':{ 
+    empresa:'TRS', mes:'Setembro', nome:'600 • São Vicente Imigrantes (Aéreo - RO 001/2026)', coord:[-23.9675,-46.3850], risco:'Controlado', cor:'#22c55e', ro:'Com RO (RO 001/2026)', temRO:true, corPin:'#1e3a8a',
+    diagnosticoVistoria: 'Trabalho em altura/aéreo verificado com procedimentos de ancoragem e amarração.',
+    detalheRO: 'RO 001/2026 preenchido.',
+    recomendacao: 'Inspecionar periodicamente os cintos de segurança e linhas de vida.'
+},
+'600_2':{ 
+    empresa:'TRS', mes:'Outubro', nome:'600 • São Vicente Imigrantes (Subterrâneo)', coord:[-23.9690,-46.3870], risco:'Controlado', cor:'#22c55e', ro:'Com RO (Subterrâneo)', temRO:true, corPin:'#1e3a8a',
+    diagnosticoVistoria: 'Atividade subterrânea na região costeira com condições de solo e escoramento OK.',
+    detalheRO: 'RO de atividade subterrânea preenchido.',
+    recomendacao: 'Monitorar nível pluviométrico para prevenção de alagamentos na galeria.'
+}
+};
+
+const dadosQualitativos = {
+    'all': {
+        inconsistencias: [
+            '1. Subtração de Cabos e Ameaças à Equipe em Operações Noturnas (Obra 650 - Always)',
+            '2. Alerta de Furto em Veículo Logístico (Obra 658 - Av. Coqueiral / Sempre Monitorado)',
+            '3. Fadiga Operacional e Excesso de Jornada em Operações Consecutivas',
+            '4. Resistência Operacional de Técnicos a Registros e Controles',
+            '5. Restrições Físicas de Acesso em Vias Estreitas e Exposições de Carga'
+        ],
+        mitigacoes: [
+            '• Reforço de Apoio Operacional e Monitoramento em Frentes Noturnas',
+            '• Guarda Dedicada e Vigilância Ativa em Veículos de Carga de Cabos',
+            '• Revisão de Escalas e Gerenciamento Rigoroso de Descanso entre Jornadas',
+            '• Exigência de Cumprimento de Diretrizes Fotográficas e de Canais Oficiais',
+            '• Adaptação Tática de Perímetro e Acompanhamento Preventivo'
+        ]
+    },
+    'Always': {
+        inconsistencias: [
+            '1. Ocorrência Única de RO Crítico: Subtração de Cabos e Ameaça (Obra 650-003)',
+            '2. Relatório de Vistoria 019/2026 sem Emissão de RO Efetivo (Obra 658 - Av. Coqueiral)',
+            '3. Elevado Índice de Inconsistências Cadastrais em Campo (CPFs não validados)',
+            '4. Alinhamento Pendente de Instruções Fotográficas para Agentes Substitutos',
+            '5. Substituições de Escala sem Atualização Prévia de Canais Oficiais'
+        ],
+        mitigacoes: [
+            '• Acionamento Preventivo de Apoio Operacional e Protocolo de Não Confronto',
+            '• Intensificação de Proteção Patrimonial de Caminhões de Carga de Cabos',
+            '• Validação Cadastral Prévia de CPF e Documentos antes da Liberação',
+            '• Reciclagem e Instrução Obrigatória de Agentes Substitutos',
+            '• Alocação Rigorosa de Supervisores Dedicados em Campo'
+        ]
+    },
+    'TRS': {
+        inconsistencias: [
+            '1. Fadiga Operacional e Sono em Posto de Trabalho (Rifaina 659)',
+            '2. Resistência da Equipe Técnica quanto a Registros Fotográficos (Rifaina 632)',
+            '3. Exposição de Materiais e Cabos em Via Pública aguardando Logística',
+            '4. Furgões de Transporte sem Ajudantes de Carga ou Sistemas de Lacração'
+        ],
+        mitigacoes: [
+            '• Controle Rigoroso de Jornadas, Descanso e Prevenção de Fadiga',
+            '• Cobrança de Conformidade das Diretrizes Fotográficas com Apoio da Supervisão',
+            '• Manutenção do Monitoramento com ROs Ativos e Presença Dedicada',
+            '• Inspeções Periódicas de Segurança em Obras'
+        ]
+    }
+};
+
+var map;
+var markers = {};
+var riskChart;
+var roChart;
+
+function popularSelectObras() {
+    let empresaSel = document.getElementById('empresa').value;
+    let selectObra = document.getElementById('obra');
+    
+    selectObra.innerHTML = '';
+
+    let optDefault = document.createElement('option');
+    optDefault.value = 'all';
+    optDefault.textContent = 'Todas as Obras';
+    selectObra.appendChild(optDefault);
+
+    Object.keys(obras).forEach(id => {
+        let o = obras[id];
+        if (empresaSel === 'all' || o.empresa === empresaSel) {
+            let opt = document.createElement('option');
+            opt.value = id;
+            // Adiciona um indicador visual (🔴) se a obra possui RO emitido
+            opt.textContent = (o.temRO ? '🔴 ' : '') + o.nome;
+            selectObra.appendChild(opt);
+        }
+    });
+
+    selectObra.value = 'all';
+}
+
+function aplicarFiltros() {
+    let mes = document.getElementById('mes').value;
+    let empresa = document.getElementById('empresa').value;
+    let obra = document.getElementById('obra').value;
+
+    let container = document.getElementById('kpisContainer');
+    let cardTRS = document.getElementById('cardTRS');
+    let cardAlways = document.getElementById('cardAlways');
+
+    if (empresa === 'TRS') {
+        cardTRS.style.display = 'block';
+        cardAlways.style.display = 'none';
+        container.classList.add('single-column');
+    } else if (empresa === 'Always') {
+        cardTRS.style.display = 'none';
+        cardAlways.style.display = 'block';
+        container.classList.add('single-column');
+    } else {
+        cardTRS.style.display = 'block';
+        cardAlways.style.display = 'block';
+        container.classList.remove('single-column');
+    }
+
+    let infoQuali = dadosQualitativos[empresa] || dadosQualitativos['all'];
+    
+    let containerInconsistencias = document.getElementById('listaInconsistencias');
+    containerInconsistencias.innerHTML = '';
+    infoQuali.inconsistencias.forEach(item => {
+        let div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = '<b>' + item + '</b>';
+        containerInconsistencias.appendChild(div);
+    });
+
+    let containerMitigacoes = document.getElementById('listaMitigacoes');
+    containerMitigacoes.innerHTML = '';
+    infoQuali.mitigacoes.forEach(item => {
+        let div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = '<b>' + item + '</b>';
+        containerMitigacoes.appendChild(div);
+    });
+
+    let tintedResumo = document.getElementById('textoResumo');
+    let tituloResumo = document.getElementById('tituloResumo');
+
+    if (obra !== 'all' && obras[obra]) {
+        let oSel = obras[obra];
+        tituloResumo.innerHTML = '🔍 Levantamento Técnico de Campo • Obra ' + oSel.nome.split('•')[0].trim();
+        tintedResumo.innerHTML = `
+            <div class="ficha-obra">
+                <div class="ficha-header">${oSel.nome}</div>
+                <div class="ficha-grid">
+                    <div class="ficha-item"><b>Empresa Responsável:</b> ${oSel.empresa}</div>
+                    <div class="ficha-item"><b>Período Mapeado:</b> ${oSel.mes} / 2026</div>
+                    <div class="ficha-item"><b>Status de Risco:</b> <span style="color:${oSel.cor}; font-weight:bold;">${oSel.risco}</span></div>
+                    <div class="ficha-item"><b>Status de Ocorrência:</b> <b>${oSel.ro}</b></div>
+                </div>
+                <b>📋 Relatório de Vistoria / Diagnóstico Técnico:</b>
+                <div class="ficha-detalhe">${oSel.diagnosticoVistoria}</div>
+                <b style="margin-top:10px;">🚨 Relatório de Ocorrência (RO) / Detalhes do Incidente:</b>
+                <div class="ficha-ro">${oSel.detalheRO}</div>
+                <b style="margin-top:10px;">🛡️ Ação Mitigadora Recomendada:</b>
+                <div class="ficha-detalhe" style="border-left-color:#22c55e;">${oSel.recomendacao}</div>
+            </div>
+        `;
+        if (map) map.setView(oSel.coord, 15);
+    } else {
+        tituloResumo.innerHTML = '📋 Resumo Geral';
+        let textoPeriodo = (mes === 'all') ? 'Setembro + Outubro' : mes;
+        let textoEmpresa = (empresa === 'all') ? 'Todas as Empresas' : empresa;
+        tintedResumo.innerHTML = 'Exibindo mapeamento consolidado do período: <b>' + textoPeriodo + '</b> | Empresa(s): <b>' + textoEmpresa + '</b>.';
+        if (map) map.setView([-23.60, -46.75], 10);
+    }
+
+    let trsTotal = 0, trsROs = 0, trsCriticas = 0, trsControladas = 0;
+    let alwaysTotal = 0, alwaysROs = 0, alwaysCriticas = 0, alwaysControladas = 0;
+    let nCritico = 0, nAlto = 0, nMedio = 0, nControlado = 0;
+
+    Object.keys(obras).forEach(id => {
+        let o = obras[id];
+        let exibir = true;
+
+        if (mes !== 'all' && o.mes !== mes) exibir = false;
+        if (empresa !== 'all' && o.empresa !== empresa) exibir = false;
+        if (obra !== 'all' && id !== obra) exibir = false;
+
+        if (markers[id]) {
+            if (exibir) {
+                if (map && !map.hasLayer(markers[id])) markers[id].addTo(map);
+            } else {
+                if (map && map.hasLayer(markers[id])) map.removeLayer(markers[id]);
+            }
+        }
+
+        if (exibir) {
+            if (o.empresa === 'TRS') {
+                trsTotal++;
+                if (o.temRO) trsROs++;
+                if (o.risco === 'Crítico' || o.risco === 'Alto') trsCriticas++;
+                if (o.risco === 'Controlado') trsControladas++;
+            } else if (o.empresa === 'Always') {
+                alwaysTotal++;
+                if (o.temRO) alwaysROs++;
+                if (o.risco === 'Crítico' || o.risco === 'Alto') alwaysCriticas++;
+                if (o.risco === 'Controlado') alwaysControladas++;
+            }
+
+            if (o.risco === 'Crítico') nCritico++;
+            else if (o.risco === 'Alto') nAlto++;
+            else if (o.risco === 'Médio') nMedio++;
+            else if (o.risco === 'Controlado') nControlado++;
+        }
+    });
+
+    document.getElementById('kpiTotalTRS').innerText = trsTotal;
+    document.getElementById('kpiROsTRS').innerText = trsROs;
+    document.getElementById('kpiCriticasTRS').innerText = trsCriticas;
+    document.getElementById('kpiControladasTRS').innerText = trsControladas;
+
+    document.getElementById('kpiTotalAlways').innerText = alwaysTotal;
+    document.getElementById('kpiROsAlways').innerText = alwaysROs;
+    document.getElementById('kpiCriticasAlways').innerText = alwaysCriticas;
+    document.getElementById('kpiControladasAlways').innerText = alwaysControladas;
+
+    document.getElementById('roTRS').innerText = trsROs + ' ROs';
+    document.getElementById('roAlways').innerText = alwaysROs + ' RO';
+
+    document.getElementById('cntCritico').innerText = nCritico + ' Obras';
+    document.getElementById('cntAlto').innerText = nAlto + ' Obras';
+    document.getElementById('cntMedio').innerText = nMedio + ' Obras';
+    document.getElementById('cntControlado').innerText = nControlado + ' Obras';
+
+    if (riskChart) {
+        riskChart.data.datasets[0].data = [nCritico, nAlto, nMedio, nControlado];
+        riskChart.update();
+    }
+
+    if (roChart) {
+        roChart.data.datasets[0].data = [trsROs, alwaysROs];
+        roChart.update();
+    }
+
+    if (map) setTimeout(() => { map.invalidateSize(); }, 100);
+}
+
+function aoMudarEmpresa() {
+    popularSelectObras();
+    aplicarFiltros();
+}
+
+window.addEventListener('load', function() {
+    const ctxRisk = document.getElementById('riskChart').getContext('2d');
+    riskChart = new Chart(ctxRisk, {
+        type: 'doughnut',
+        data: {
+            labels: ['Crítico', 'Alto', 'Médio', 'Controlado'],
+            datasets: [{
+                data: [4, 2, 6, 12],
+                backgroundColor: ['#ef4444', '#f97316', '#eab308', '#22c55e'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { color: '#fff', boxWidth: 10, font: { size: 10 } } }
+            }
+        }
+    });
+
+    const ctxRo = document.getElementById('roChart').getContext('2d');
+    roChart = new Chart(ctxRo, {
+        type: 'bar',
+        data: {
+            labels: ['TR&S', 'Always'],
+            datasets: [{
+                label: 'ROs Elaborados',
+                data: [6, 1],
+                backgroundColor: ['#3b82f6', '#f97316'],
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#fff' }, grid: { display: false } },
+                y: { ticks: { color: '#fff', stepSize: 1 }, grid: { color: '#334155' } }
+            }
+        }
+    });
+
+    map = L.map('map', {
+        zoomControl: true,
+        attributionControl: false
+    }).setView([-23.60, -46.75], 10);
+
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19
+    }).addTo(map);
+
+    Object.keys(obras).forEach(id => {
+        let o = obras[id];
+        let marker = L.circleMarker(o.coord, {
+            radius: 8,
+            fillColor: o.corPin,
+            color: '#fff',
+            weight: 1.5,
+            opacity: 1,
+            fillOpacity: 0.9
+        });
+
+        marker.bindPopup(`
+            <b>${o.nome}</b><br>
+            <b>Empresa:</b> ${o.empresa}<br>
+            <b>Mês:</b> ${o.mes}<br>
+            <b>Risco:</b> <span style="color:${o.cor};">${o.risco}</span><br>
+            <b>Status:</b> ${o.ro}
+        `);
+
+        marker.on('click', function() {
+            document.getElementById('obra').value = id;
+            aplicarFiltros();
+        });
+
+        markers[id] = marker;
+        marker.addTo(map);
+    });
+
+    popularSelectObras();
+    aplicarFiltros();
+});
+</script>
+
+</body>
+</html>
