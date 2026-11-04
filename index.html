@@ -319,9 +319,10 @@ grid-template-columns: 1fr;
 <div class="card" style="border-color: #38bdf8; margin-bottom:0;">
 <b>🗓️ Período / Mês</b>
 <select id="mes" onchange="aplicarFiltros()">
-<option value="all">Todos (Set/Out)</option>
+<option value="all">Todos (Set/Out/Nov)</option>
 <option value="Setembro">Setembro / 2026</option>
 <option value="Outubro">Outubro / 2026</option>
+<option value="Novembro">Novembro / 2026</option>
 </select>
 </div>
 
@@ -373,7 +374,7 @@ grid-template-columns: 1fr;
         <div class="kpis">
             <div class="kpi-card blue">
                 <div>Total Obras</div>
-                <div class="kpi" id="kpiTotalAlways">11</div>
+                <div class="kpi" id="kpiTotalAlways">12</div>
             </div>
             <div class="kpi-card purple">
                 <div>ROs Elaborados</div>
@@ -473,10 +474,16 @@ const obras = {
     recomendacao: 'Alocação imediata de supervisor fixo em campo e paralisação temporária das atividades até regularização documental de segurança.'
 },
 '608':{ 
-    empresa:'Always', mes:'Setembro', nome:'608 • Taboão da Serra (Sem RO)', coord:[-23.623,-46.785], risco:'Alto', cor:'#f97316', ro:'Sem RO', temRO:false, corPin:'#f97316',
+    empresa:'Always', mes:'Setembro', nome:'608 • Taboão da Serra (Setembro - Sem RO)', coord:[-23.623,-46.785], risco:'Alto', cor:'#f97316', ro:'Sem RO', temRO:false, corPin:'#f97316',
     diagnosticoVistoria: 'Inconsistências no cumprimento de procedimentos operacionais padrão e falta de comunicação via canais oficiais. Risco residual elevado devido à falta de acompanhamento de campo.',
     detalheRO: 'Sem ocorrências formais registradas.',
     recomendacao: 'Realizar auditoria presencial emergencial e estabelecer checklist obrigatório de início de jornada.'
+},
+'608_nov':{ 
+    empresa:'Always', mes:'Novembro', nome:'608 • Taboão da Serra (Relatório 022/2026 - 04.11)', coord:[-23.626,-46.788], risco:'Alto', cor:'#f97316', ro:'Sem RO (Relatório 022/2026)', temRO:false, corPin:'#f97316',
+    diagnosticoVistoria: 'Relatório 022/2026 (04.11.2026): Vistoria realizada na frente de Taboão da Serra. Acompanhamento das equipes operacionais e verificação de conformidade de segurança e procedimentos de campo.',
+    detalheRO: 'Sem emissão de Relatório de Ocorrência (RO) formal para esta vistoria de novembro.',
+    recomendacao: 'Manutenção da supervisão ativa, cumprimento rigoroso das diretrizes de segurança e acompanhamento contínuo das frentes de trabalho.'
 },
 '609':{ 
     empresa:'Always', mes:'Setembro', nome:'609 • Chácara Santo Antônio (Sem RO)', coord:[-23.641,-46.695], risco:'Crítico', cor:'#ef4444', ro:'Sem RO', temRO:false, corPin:'#ef4444',
@@ -664,7 +671,6 @@ function popularSelectObras() {
         if (empresaSel === 'all' || o.empresa === empresaSel) {
             let opt = document.createElement('option');
             opt.value = id;
-            // Adiciona um indicador visual (🔴) se a obra possui RO emitido
             opt.textContent = (o.temRO ? '🔴 ' : '') + o.nome;
             selectObra.appendChild(opt);
         }
@@ -742,7 +748,7 @@ function aplicarFiltros() {
         if (map) map.setView(oSel.coord, 15);
     } else {
         tituloResumo.innerHTML = '📋 Resumo Geral';
-        let textoPeriodo = (mes === 'all') ? 'Setembro + Outubro' : mes;
+        let textoPeriodo = (mes === 'all') ? 'Setembro + Outubro + Novembro' : mes;
         let textoEmpresa = (empresa === 'all') ? 'Todas as Empresas' : empresa;
         tintedResumo.innerHTML = 'Exibindo mapeamento consolidado do período: <b>' + textoPeriodo + '</b> | Empresa(s): <b>' + textoEmpresa + '</b>.';
         if (map) map.setView([-23.60, -46.75], 10);
@@ -831,7 +837,7 @@ window.addEventListener('load', function() {
         data: {
             labels: ['Crítico', 'Alto', 'Médio', 'Controlado'],
             datasets: [{
-                data: [4, 2, 6, 12],
+                data: [4, 3, 6, 12],
                 backgroundColor: ['#ef4444', '#f97316', '#eab308', '#22c55e'],
                 borderWidth: 0
             }]
