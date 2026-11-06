@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mapeamento de Risco em Obras - V8.9 BI Analytics</title>
+<title>Mapeamento de Risco em Obras - V8.10 BI Analytics</title>
 
 <!-- Leaflet CSS e JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -303,7 +303,7 @@ grid-template-columns: 1fr;
 <body>
 
 <header>
-📍 Mapeamento de Risco em Obras - V8.9 BI Analytics
+📍 Mapeamento de Risco em Obras - V8.10 BI Analytics
 </header>
 
 <div class="wrap">
@@ -318,7 +318,7 @@ grid-template-columns: 1fr;
 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px;">
 <div class="card" style="border-color: #38bdf8; margin-bottom:0;">
 <b>🗓️ Período / Mês</b>
-<select id="mes" onchange="aplicarFiltros()">
+<select id="mes" onchange="aoMudarMes()">
 <option value="all">Todos (Set/Out/Nov)</option>
 <option value="Setembro">Setembro / 2026</option>
 <option value="Outubro">Outubro / 2026</option>
@@ -358,12 +358,12 @@ grid-template-columns: 1fr;
                 <div class="kpi" id="kpiROsTRS">6</div>
             </div>
             <div class="kpi-card red">
-                <div>Obras Críticas</div>
-                <div class="kpi" id="kpiCriticasTRS">1</div>
+                <div>Obras Críticas/Altas</div>
+                <div class="kpi" id="kpiCriticasTRS">2</div>
             </div>
             <div class="kpi-card green">
                 <div>Obras Controladas</div>
-                <div class="kpi" id="kpiControladasTRS">11</div>
+                <div class="kpi" id="kpiControladasTRS">10</div>
             </div>
         </div>
     </div>
@@ -374,7 +374,7 @@ grid-template-columns: 1fr;
         <div class="kpis">
             <div class="kpi-card blue">
                 <div>Total Obras</div>
-                <div class="kpi" id="kpiTotalAlways">12</div>
+                <div class="kpi" id="kpiTotalAlways">11</div>
             </div>
             <div class="kpi-card purple">
                 <div>ROs Elaborados</div>
@@ -438,9 +438,9 @@ grid-template-columns: 1fr;
 <div class="card" style="margin-bottom:0;">
 <h3>📊 Distribuição do Ranking Residual</h3>
 <div class="item">🔴 <span class="status-critico">Crítico (Res. 29):</span> <span class="badge-count" id="cntCritico">3 Obras</span></div>
-<div class="item">🟠 <span class="status-alto">Alto (Res. 18 - 24):</span> <span class="badge-count" id="cntAlto">2 Obras</span></div>
+<div class="item">🟠 <span class="status-alto">Alto (Res. 18 - 24):</span> <span class="badge-count" id="cntAlto">3 Obras</span></div>
 <div class="item">🟡 <span class="status-medio">Médio (Res. 15):</span> <span class="badge-count" id="cntMedio">6 Obras</span></div>
-<div class="item">🟢 <span class="status-controlado">Controlado (Res. 2 - 5):</span> <span class="badge-count" id="cntControlado">13 Obras</span></div>
+<div class="item">🟢 <span class="status-controlado">Controlado (Res. 2 - 5):</span> <span class="badge-count" id="cntControlado">12 Obras</span></div>
 </div>
 </div>
 
@@ -532,11 +532,11 @@ const obras = {
     recomendacao: 'Solicitar emissão periódica do RO para acompanhamento do ranking residual.'
 },
 '636':{ 
-    empresa:'TRS', mes:'Outubro', nome:'636 • Campo Limpo Noturno (Sem RO)', coord:[-23.648,-46.758], risco:'Controlado', cor:'#22c55e', ro:'Sem RO', temRO:false, corPin:'#22c55e',
-    historicoRisco: { meses: ['Setembro', 'Outubro', 'Novembro'], valores: [1, 1, 1] },
-    diagnosticoVistoria: 'Serviço noturno executado dentro da normalidade operacional. Equipes devidamente credenciadas.',
-    detalheRO: 'Sem ocorrências registradas.',
-    recomendacao: 'Reforçar monitoramento nos horários de troca de turno.'
+    empresa:'TRS', mes:'Outubro', nome:'636 • Campo Limpo (Alto Risco - Sem RO)', coord:[-23.649,-46.758], risco:'Alto', cor:'#f97316', ro:'Sem RO', temRO:false, corPin:'#f97316',
+    historicoRisco: { meses: ['Setembro', 'Outubro', 'Novembro'], valores: [3, 3, 3] },
+    diagnosticoVistoria: 'Obra vinculada à TR&S com classificação de risco alto devido a vulnerabilidades operacionais e exposição em área externa, operando sem Relatório de Ocorrência (RO).',
+    detalheRO: 'Nenhum RO emitido para esta frente de trabalho.',
+    recomendacao: 'Intensificar a fiscalização presencial, garantir acompanhamento integral da equipe e monitorar de perto os fatores de risco elevado.'
 },
 '642_1':{ 
     empresa:'Always', mes:'Outubro', nome:'642 • Osasco Rochdalle - Eq. 1 / Rua Cisne (Relatório 018/2026)', coord:[-23.518,-46.782], risco:'Controlado', cor:'#22c55e', ro:'Sem RO (Vistoria 018/2026)', temRO:false, corPin:'#22c55e',
@@ -615,6 +615,13 @@ const obras = {
     detalheRO: 'Sem RO gerado no período.',
     recomendacao: 'Manutenção da presença vigilante e contínua dos agentes junto aos veículos e acompanhamento integral do transbordo das cargas.'
 },
+'669':{ 
+    empresa:'TRS', mes:'Novembro', nome:'669 • Capão Redondo - Aéreo (Relatório 023/2026 - 05.11)', coord:[-23.650,-46.770], risco:'Alto', cor:'#f97316', ro:'Sem RO (Vistoria 023/2026)', temRO:false, corPin:'#f97316',
+    historicoRisco: { meses: ['Setembro', 'Outubro', 'Novembro'], valores: [3, 3, 3] },
+    diagnosticoVistoria: 'Relatório 023/2026 (05.11.2026): Vistoria realizada pelo auditor Felipe Machado Lima na frente do Capão Redondo (Aéreo). Prestador Renan Vieira de Lacasa (Honda Fit cinza, placa NTI0E33). Constatou-se que o agente atuava com o braço direito imobilizado por gesso e tipoia (decorrente de acidente de motocicleta), limitando sua capacidade de resposta em emergências. Relato sobre presença não autorizada de indivíduo (Michael) no dia anterior. Paralisação temporária por chuvas (10h20 às 11h40).',
+    detalheRO: 'Sem emissão de Relatório de Ocorrência (RO) formal; ocorrências registradas no Relatório de Vistoria 023/2026.',
+    recomendacao: 'Avaliação imediata pela gestão e prestadora quanto à alocação de colaborador com limitação física em campo e reforço no controle de acesso de terceiros.'
+},
 '600_1':{ 
     empresa:'TRS', mes:'Setembro', nome:'600 • São Vicente Imigrantes (Aéreo - RO 001/2026)', coord:[-23.9675,-46.3850], risco:'Controlado', cor:'#22c55e', ro:'Com RO (RO 001/2026)', temRO:true, corPin:'#1e3a8a',
     historicoRisco: { meses: ['Setembro', 'Outubro', 'Novembro'], valores: [1, 1, 1] },
@@ -636,16 +643,16 @@ const dadosQualitativos = {
         inconsistencias: [
             '1. Subtração de Cabos e Ameaças à Equipe em Operações Noturnas (Obra 650 - Always)',
             '2. Alerta de Furto em Veículo Logístico (Obra 658 - Av. Coqueiral / Sempre Monitorado)',
-            '3. Fadiga Operacional e Excesso de Jornada em Operações Consecutivas',
-            '4. Resistência Operacional de Técnicos a Registros e Controles',
-            '5. Restrições Físicas de Acesso em Vias Estreitas e Exposições de Carga'
+            '3. Alocação de Agente com Limitação Física / Braço Imobilizado (Obra 669 - Capão Redondo)',
+            '4. Fadiga Operacional e Excesso de Jornada em Operações Consecutivas',
+            '5. Presença Não Autorizada de Terceiros e Restrições de Acesso'
         ],
         mitigacoes: [
+            '• Avaliação e Afastamento/Remanejamento de Agente com Restrição Médica/Física',
             '• Reforço de Apoio Operacional e Monitoramento em Frentes Noturnas',
             '• Guarda Dedicada e Vigilância Ativa em Veículos de Carga de Cabos',
             '• Revisão de Escalas e Gerenciamento Rigoroso de Descanso entre Jornadas',
-            '• Exigência de Cumprimento de Diretrizes Fotográficas e de Canais Oficiais',
-            '• Substituição Preventiva de Agentes Sem Desempenho e Alinhamento Tático'
+            '• Controle Rigoroso de Acesso e Cumprimento das Diretrizes de Segurança'
         ]
     },
     'Always': {
@@ -666,16 +673,17 @@ const dadosQualitativos = {
     },
     'TRS': {
         inconsistencias: [
-            '1. Fadiga Operacional e Sono em Posto de Trabalho (Rifaina 659)',
-            '2. Resistência da Equipe Técnica quanto a Registros Fotográficos (Rifaina 632)',
-            '3. Exposição de Materiais e Cabos em Via Pública aguardando Logística',
-            '4. Furgões de Transporte sem Ajudantes de Carga ou Sistemas de Lacração'
+            '1. Alocação de Agente com Braço Imobilizado por Gesso/Tipóia (Obra 669 - Capão Redondo)',
+            '2. Fadiga Operacional e Sono em Posto de Trabalho (Rifaina 659)',
+            '3. Resistência da Equipe Técnica quanto a Registros Fotográficos (Rifaina 632)',
+            '4. Presença Não Autorizada de Terceiro em Frente Monitorada',
+            '5. Furgões de Transporte sem Ajudantes de Carga ou Sistemas de Lacração'
         ],
         mitigacoes: [
+            '• Revisão Imediata de Restrições Médicas para Alocação Operacional',
             '• Controle Rigoroso de Jornadas, Descanso e Prevenção de Fadiga',
             '• Cobrança de Conformidade das Diretrizes Fotográficas com Apoio da Supervisão',
-            '• Manutenção do Monitoramento com ROs Ativos e Presença Dedicada',
-            '• Inspeções Periódicas de Segurança em Obras'
+            '• Manutenção do Monitoramento com ROs Ativos e Presença Dedicada'
         ]
     }
 };
@@ -687,6 +695,7 @@ var roChart;
 var evolutionChart;
 
 function popularSelectObras() {
+    let mesSel = document.getElementById('mes').value;
     let empresaSel = document.getElementById('empresa').value;
     let selectObra = document.getElementById('obra');
     
@@ -699,7 +708,10 @@ function popularSelectObras() {
 
     Object.keys(obras).forEach(id => {
         let o = obras[id];
-        if (empresaSel === 'all' || o.empresa === empresaSel) {
+        let matchMes = (mesSel === 'all' || o.mes === mesSel);
+        let matchEmpresa = (empresaSel === 'all' || o.empresa === empresaSel);
+
+        if (matchMes && matchEmpresa) {
             let opt = document.createElement('option');
             opt.value = id;
             opt.textContent = (o.temRO ? '🔴 ' : '') + o.nome;
@@ -708,6 +720,16 @@ function popularSelectObras() {
     });
 
     selectObra.value = 'all';
+}
+
+function aoMudarMes() {
+    popularSelectObras();
+    aplicarFiltros();
+}
+
+function aoMudarEmpresa() {
+    popularSelectObras();
+    aplicarFiltros();
 }
 
 function aplicarFiltros() {
@@ -778,7 +800,6 @@ function aplicarFiltros() {
         `;
         if (map) map.setView(oSel.coord, 15);
 
-        // Atualizar Gráfico de Evolução de Risco
         if (evolutionChart && oSel.historicoRisco) {
             let hist = oSel.historicoRisco;
             let coresPontos = hist.valores.map(v => {
@@ -800,10 +821,9 @@ function aplicarFiltros() {
         tintedResumo.innerHTML = 'Exibindo mapeamento consolidado do período: <b>' + textoPeriodo + '</b> | Empresa(s): <b>' + textoEmpresa + '</b>.';
         if (map) map.setView([-23.60, -46.75], 10);
 
-        // Atualizar Gráfico de Evolução Geral (Média das obras ou padrão 608)
         if (evolutionChart) {
             evolutionChart.data.labels = ['Setembro', 'Outubro', 'Novembro'];
-            evolutionChart.data.datasets[0].data = [3, 3, 1]; // Padrão Obra 608
+            evolutionChart.data.datasets[0].data = [3, 3, 1];
             evolutionChart.data.datasets[0].pointBackgroundColor = ['#f97316', '#f97316', '#22c55e'];
             evolutionChart.data.datasets[0].borderColor = '#22c55e';
             evolutionChart.update();
@@ -881,11 +901,6 @@ function aplicarFiltros() {
     if (map) setTimeout(() => { map.invalidateSize(); }, 100);
 }
 
-function aoMudarEmpresa() {
-    popularSelectObras();
-    aplicarFiltros();
-}
-
 window.addEventListener('load', function() {
     const ctxEvolution = document.getElementById('evolutionChart').getContext('2d');
     evolutionChart = new Chart(ctxEvolution, {
@@ -950,7 +965,7 @@ window.addEventListener('load', function() {
         data: {
             labels: ['Crítico', 'Alto', 'Médio', 'Controlado'],
             datasets: [{
-                data: [3, 2, 6, 13],
+                data: [3, 3, 6, 12],
                 backgroundColor: ['#ef4444', '#f97316', '#eab308', '#22c55e'],
                 borderWidth: 0
             }]
@@ -1022,15 +1037,6 @@ window.addEventListener('load', function() {
 
         markers[id] = marker;
         marker.addTo(map);
-    });
-
-    popularSelectObras();
-    aplicarFiltros();
-});
-</script>
-
-</body>
-</html>     marker.addTo(map);
     });
 
     popularSelectObras();
