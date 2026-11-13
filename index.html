@@ -4,11 +4,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mapeamento de Risco em Obras - V8.10 BI Analytics</title>
+<title>Mapeamento de Risco em Obras - V8.11 BI Analytics</title>
 
 <!-- Leaflet CSS e JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=NevUScghbtZRRXawbrgHI4YkfbOyWk3fK5ynnZUVlmGJSDqbfRGxqdwz71beBHuEChk8MXRCju5Z7arOJCd3hmHfcwE6cEt5GelHqs6-0uV7aVf_v2YZ30rWfH0KwkeIXfTsEhQyFNk6Ajom2ex7ztXler8BoSDQhsgfeLXhvNhxN67-S178RRe5WYE7-Fu2IvZT99a6Qjz6tDwo1t-hdHct7kDqR06nXLDq-yCaZHsoE_7i1UMjH80Ot7dEKvLX_JuasK-qsHHoZ0xGVr5sD9so2cAHN7XsR6JQvfaW06GCEzZaCfaDE_1L5cpBQ6oGjhUiO5H3RTnFc_KDWszfm4ezb4QWvGUAofzDXlDDw_8" charset="UTF-8"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <!-- Chart.js para Gráficos Dinâmicos -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -303,7 +303,7 @@ grid-template-columns: 1fr;
 <body>
 
 <header>
-📍 Mapeamento de Risco em Obras - V8.10 BI Analytics
+📍 Mapeamento de Risco em Obras - V8.11 BI Analytics
 </header>
 
 <div class="wrap">
@@ -431,7 +431,7 @@ grid-template-columns: 1fr;
 <b>TR&S:</b> <span style="color:#38bdf8; font-weight:bold;">Possui ROs</span> <span class="badge-count" id="roTRS">6 ROs</span>
 </div>
 <div class="item">
-<b>Always:</b> <span style="color:#f97316; font-weight:bold;">Possui 1 RO</span> <span class="badge-count" id="roAlways">1 RO</span>
+<b>Always:</b> <span style="color:#f97316; font-weight:bold;">Possui ROs</span> <span class="badge-count" id="roAlways">3 ROs</span>
 </div>
 </div>
 
@@ -615,6 +615,20 @@ const obras = {
     detalheRO: 'Sem RO gerado no período.',
     recomendacao: 'Manutenção da presença vigilante e contínua dos agentes junto aos veículos e acompanhamento integral do transbordo das cargas.'
 },
+'664_1':{ 
+    empresa:'Always', mes:'Novembro', nome:'664 • Ermelino Matarazzo - 1Ag (RO 007/2026 - 07.11)', coord:[-23.4910,-46.4800], risco:'Alto', cor:'#f97316', ro:'Com RO (RO 007/2026)', temRO:true, corPin:'#1e3a8a',
+    historicoRisco: { meses: ['Setembro', 'Outubro', 'Novembro'], valores: [3, 3, 3] },
+    diagnosticoVistoria: 'Apenas Relatório de Ocorrência (RO) registrado. Atividade de corte e recolhimento de cabos em caminhão tipo sider com laterais abertas durante carregamento.',
+    detalheRO: 'RO 007/2026 (07/11/2026 às 15h16): Caminhão cercado por indivíduos com comportamento hostil visando a carga exposta. O agente Renato Cleber da Fontoura Nunes adotou procedimento defensivo preventivo (saque de armamento e verbalização), dispersando os envolvidos sem disparos. Motorista travou a cabine e deslocou o veículo para local seguro (CD Mauá) sem perda patrimonial.',
+    recomendacao: 'Reduzir a distância entre os pontos de corte e o caminhão, agilizar o recolhimento dos cabos na via pública e avaliar reforço de segurança em áreas críticas.'
+},
+'664_2':{ 
+    empresa:'Always', mes:'Novembro', nome:'664 • Ermelino Matarazzo - 1Ag (RO 008/2026 - 12.11)', coord:[-23.4925,-46.4812], risco:'Alto', cor:'#f97316', ro:'Com RO (RO 008/2026)', temRO:true, corPin:'#1e3a8a',
+    historicoRisco: { meses: ['Setembro', 'Outubro', 'Novembro'], valores: [3, 3, 3] },
+    diagnosticoVistoria: 'Apenas Relatório de Ocorrência (RO) registrado. Grande quantidade de cabos puxados e cortados ao longo da via pública dificultando a visualização integral simultânea.',
+    detalheRO: 'RO 008/2026 (12/11/2026 às 16h50 - Rua Antônio de Freitas Toledo, 83): Agente de segurança Sátilo identificou tentativa de furto a cerca de 50 metros do caminhão. Realizou deslocamento e intervenção preventiva, fazendo os indivíduos evadirem antes da subtração. Apoio policial acionado compareceu ao local. Implantação de Agente Administrativo (ADM) definida a partir de 13/11.',
+    recomendacao: 'Manter reforço com profissional administrativo de apoio (ADM) e evitar o acúmulo de cabos cortados distantes do ponto de carregamento.'
+},
 '669':{ 
     empresa:'TRS', mes:'Novembro', nome:'669 • Capão Redondo - Aéreo (Relatório 023/2026 - 05.11)', coord:[-23.650,-46.770], risco:'Alto', cor:'#f97316', ro:'Sem RO (Vistoria 023/2026)', temRO:false, corPin:'#f97316',
     historicoRisco: { meses: ['Setembro', 'Outubro', 'Novembro'], valores: [3, 3, 3] },
@@ -645,7 +659,7 @@ const dadosQualitativos = {
             '2. Alerta de Furto em Veículo Logístico (Obra 658 - Av. Coqueiral / Sempre Monitorado)',
             '3. Alocação de Agente com Limitação Física / Braço Imobilizado (Obra 669 - Capão Redondo)',
             '4. Fadiga Operacional e Excesso de Jornada em Operações Consecutivas',
-            '5. Presença Não Autorizada de Terceiros e Restrições de Acesso'
+            '5. Tentativas de Furto e Exposição de Carga em Ermelino Matarazzo (Obra 664 - ROs 007 e 008)'
         ],
         mitigacoes: [
             '• Avaliação e Afastamento/Remanejamento de Agente com Restrição Médica/Física',
@@ -657,7 +671,7 @@ const dadosQualitativos = {
     },
     'Always': {
         inconsistencias: [
-            '1. Ocorrência Única de RO Crítico: Subtração de Cabos e Ameaça (Obra 650-003)',
+            '1. Ocorrências de RO: Subtração/Ameaça (Obra 650) e Tentativas de Furto Contidas (Obra 664 - ROs 007 e 008)',
             '2. Relatório de Vistoria 019/2026 sem Emissão de RO Efetivo (Obra 658 - Av. Coqueiral)',
             '3. Elevado Índice de Inconsistências Cadastrais em Campo (CPFs não validados)',
             '4. Alinhamento Pendente de Instruções Fotográficas para Agentes Substitutos',
@@ -665,7 +679,7 @@ const dadosQualitativos = {
         ],
         mitigacoes: [
             '• Redução Comprovada de Risco na Obra 608 após Substituição e Alinhamento dos Agentes',
-            '• Acionamento Preventivo de Apoio Operacional e Protocolo de Não Confronto',
+            '• Implantação de Apoio Administrativo (ADM) e Pronta Intervenção Preventiva (Obra 664)',
             '• Intensificação de Proteção Patrimonial de Caminhões de Carga de Cabos',
             '• Validação Cadastral Prévia de CPF e Documentos antes da Liberação',
             '• Reciclagem e Instrução Obrigatória de Agentes Substitutos'
@@ -881,7 +895,7 @@ function aplicarFiltros() {
     document.getElementById('kpiControladasAlways').innerText = alwaysControladas;
 
     document.getElementById('roTRS').innerText = trsROs + ' ROs';
-    document.getElementById('roAlways').innerText = alwaysROs + ' RO';
+    document.getElementById('roAlways').innerText = alwaysROs + (alwaysROs === 1 ? ' RO' : ' ROs');
 
     document.getElementById('cntCritico').innerText = nCritico + ' Obras';
     document.getElementById('cntAlto').innerText = nAlto + ' Obras';
