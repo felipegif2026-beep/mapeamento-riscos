@@ -4,11 +4,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mapeamento de Risco em Obras - V8.12 BI Analytics</title>
+<title>Mapeamento de Risco em Obras - V8.13 BI Analytics</title>
 
 <!-- Leaflet CSS e JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=NevUScghbtZRRXawbrgHI4YkfbOyWk3fK5ynnZUVlmGJSDqbfRGxqdwz71beBHuEChk8MXRCju5Z7arOJCd3hmHfcwE6cEt5GelHqs6-0uV7aVf_v2YZ30rWfH0KwkeIXfTsEhQyFNk6Ajom2ex7ztXler8BoSDQhsgfeLXhvNhxN67-S178RRe5WYE7-Fu2IvZT99a6Qjz6tDwo1t-hdHct7kDqR06nXLDq-yCaZHsoE_7i1UMjH80Ot7dEKvLX_JuasK-qsHHoZ0xGVr5sD9so2cAHN7XsR6JQvfaW06GCEzZaCfaDE_1L5cpBQ6oGjhUiO5H3RTnFc_KDWszfm4ezb4QWvGUAofzDXlDDw_8" charset="UTF-8"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=eVWvfm4exmqgkE4FMGIbGG5PE-DNGY1m3q7GelmP8ZRA0Q8-uEA1zM5f9VwpCYFPpKmXzgv-92cRr4-ZH9T4waeIuBAGwMe4BOhfzvt-NMqv8OnAnGlKcY3xxx6IB6ZzSO_pgM1Eabo9CnLcqH8XI1trcrUs7rLU2aNBBenRTt_CtTt4IjNibyaUawSYvbs8v648C8LDEnI1xRIENaKpkulZVwmiwGAK-QRldNGJYElApzKJQ__1jKx1DMJGQ0jkMbX6I0ECJr5bhjmZ9_fgzH2souDLWr1nG10ESY5SLtTPHpNrdMs1QFctk3KB74INKHZwoKZ9XSXHIAXPNpwOpgxY1VvnK9q8a0jcq5SlIKY" charset="UTF-8"></script><script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=NevUScghbtZRRXawbrgHI4YkfbOyWk3fK5ynnZUVlmGJSDqbfRGxqdwz71beBHuEChk8MXRCju5Z7arOJCd3hmHfcwE6cEt5GelHqs6-0uV7aVf_v2YZ30rWfH0KwkeIXfTsEhQyFNk6Ajom2ex7ztXler8BoSDQhsgfeLXhvNhxN67-S178RRe5WYE7-Fu2IvZT99a6Qjz6tDwo1t-hdHct7kDqR06nXLDq-yCaZHsoE_7i1UMjH80Ot7dEKvLX_JuasK-qsHHoZ0xGVr5sD9so2cAHN7XsR6JQvfaW06GCEzZaCfaDE_1L5cpBQ6oGjhUiO5H3RTnFc_KDWszfm4ezb4QWvGUAofzDXlDDw_8" charset="UTF-8"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <!-- Chart.js para Gráficos Dinâmicos -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -303,7 +303,7 @@ grid-template-columns: 1fr;
 <body>
 
 <header>
-📍 Mapeamento de Risco em Obras - V8.12 BI Analytics
+📍 Mapeamento de Risco em Obras - V8.13 BI Analytics
 </header>
 
 <div class="wrap">
@@ -431,7 +431,7 @@ grid-template-columns: 1fr;
 <b>TR&S:</b> <span style="color:#38bdf8; font-weight:bold;">Possui ROs</span> <span class="badge-count" id="roTRS">6 ROs</span>
 </div>
 <div class="item">
-<b>Always:</b> <span style="color:#f97316; font-weight:bold;">Possui 1 RO</span> <span class="badge-count" id="roAlways">1 RO</span>
+<b>Always:</b> <span style="color:#f97316; font-weight:bold;">Possui ROs</span> <span class="badge-count" id="roAlways">2 ROs</span>
 </div>
 </div>
 
@@ -575,10 +575,17 @@ const obras = {
 },
 '649':{ 
     empresa:'Always', mes:'Outubro', nome:'649 • 1 AG Adventista _ 11000DV (Vistoria 014/2026)', coord:[-23.6552,-46.7712], risco:'Médio', cor:'#eab308', ro:'Sem RO (Vistoria 014/2026)', temRO:false, corPin:'#eab308',
-    historicoRisco: { meses: ['Setembro', 'Outubro', 'Novembro'], valores: [2, 2, 2] },
+    historicoRisco: { meses: ['Setembro', 'Outubro', 'Novembro'], valores: [2, 2, 4] },
     diagnosticoVistoria: 'Divergência na validação cadastral do prestador em campo (CPF não validado no sistema da gestão no momento da verificação) e postura inicial distante/pouco interativa.',
     detalheRO: 'Sem RO gerado no período.',
     recomendacao: 'Validação e regularização cadastral imediata junto à prestadora Always e gestão da operação antes de novas liberações de serviço.'
+},
+'649_nov_ro':{ 
+    empresa:'Always', mes:'Novembro', nome:'649 • 1AG - ADVENTISTA_11000DV - Aérea (RO 008/2026 - 14.11)', coord:[-23.6565,-46.7725], risco:'Crítico', cor:'#ef4444', ro:'Com RO (RO 008/2026 - Roubo à Mão Armada)', temRO:true, corPin:'#1e3a8a',
+    historicoRisco: { meses: ['Setembro', 'Outubro', 'Novembro'], valores: [2, 2, 4] },
+    diagnosticoVistoria: 'Apenas Relatório de Ocorrência (RO) registrado. Atividade aérea de retirada de cabos em ambiente urbano com equipe de escolta posicionada junto ao caminhão em ponto distinto do veículo de apoio da rede.',
+    detalheRO: 'RO 008/2026 (14/11/2026 às 11h00): Enquanto técnicos realizavam atividade em altura sobre escadas, um indivíduo armado abordou e anunciou assalto, subtraindo o automóvel da equipe da rede utilizado para acondicionamento temporário dos cabos. Polícia Militar (190) acionada. Veículo localizado posteriormente pelas autoridades, porém com os cabos armazenados em seu interior subtraídos (perda patrimonial confirmada).',
+    recomendacao: 'Revisar procedimentos operacionais de posicionamento da escolta e acondicionamento de cabos para evitar veículos da rede vulneráveis e sem vigilância durante trabalho em altura.'
 },
 '650':{ 
     empresa:'Always', mes:'Outubro', nome:'650 • Obra Rifaina Nº 650-003 (PR Adventista - Noturna)', coord:[-23.6520,-46.7620], risco:'Crítico', cor:'#ef4444', ro:'Com RO (Furto e Ameaça)', temRO:true, corPin:'#1e3a8a',
@@ -629,6 +636,13 @@ const obras = {
     detalheRO: 'RO 008/2026 (12/11/2026 às 16h50 - Rua Antônio de Freitas Toledo, 83): Agente de segurança Sátilo identificou tentativa de furto a cerca de 50 metros do caminhão. Realizou deslocamento e intervenção preventiva, fazendo os indivíduos evadirem antes da subtração. Apoio policial acionado compareceu ao local. Implantação de Agente Administrativo (ADM) definida a partir de 13/11.',
     recomendacao: 'Manter reforço com profissional administrativo de apoio (ADM) e evitar o acúmulo de cabos cortados distantes do ponto de carregamento.'
 },
+'664_vis_024':{ 
+    empresa:'TRS', mes:'Novembro', nome:'664 • Ermelino Matarazzo - Subterrâneo (Vistoria 024/2026 - 16.11)', coord:[-23.4895,-46.4792], risco:'Alto', cor:'#f97316', ro:'Sem RO (Vistoria 024/2026)', temRO:false, corPin:'#f97316',
+    historicoRisco: { meses: ['Setembro', 'Outubro', 'Novembro'], valores: [3, 3, 3] },
+    diagnosticoVistoria: 'Relatório de Vistoria 024/2026 (16/11/2026 - Auditor Felipe Machado Lima): Fiscalização na Praça Salvador Sabaté, 817, Rua Boaventura Rodrigues da Silva e Av. Boturussu, 2204. Prestadores Anderson Cinacchi Gracetti (SEG - moto Honda CG 150 Titan DZM-5053) e Dorival Marques de Souza (ADM). Identificado desvio de função do agente ADM Dorival, alocado isoladamente para guarda estática de cabos cortados deixados na via pela equipe da VIVO, comprometendo a cobertura fotográfica obrigatória junto à frente principal.',
+    detalheRO: 'Sem emissão de Relatório de Ocorrência (RO) para esta visita técnica (registrado apenas via Relatório de Vistoria 024/2026).',
+    recomendacao: 'Reorientar a prestadora TR&S quanto às funções estritas do agente ADM (acompanhamento e registro fotográfico junto à equipe técnica) e alinhar com a VIVO o corte sincronizado com o caminhão de recolhimento.'
+},
 '669':{ 
     empresa:'TRS', mes:'Novembro', nome:'669 • Capão Redondo - Aéreo (Relatório 023/2026 - 05.11)', coord:[-23.650,-46.770], risco:'Alto', cor:'#f97316', ro:'Sem RO (Vistoria 023/2026)', temRO:false, corPin:'#f97316',
     historicoRisco: { meses: ['Setembro', 'Outubro', 'Novembro'], valores: [3, 3, 3] },
@@ -655,8 +669,8 @@ const obras = {
 const dadosQualitativos = {
     'all': {
         inconsistencias: [
-            '1. Subtração de Cabos e Ameaças à Equipe em Operações Noturnas (Obra 650 - Always)',
-            '2. Alerta de Furto em Veículo Logístico (Obra 658 - Av. Coqueiral / Sempre Monitorado)',
+            '1. Roubo à Mão Armada de Veículo da Rede com Subtração de Cabos (Obra 649 Adventista - Always - RO 008/2026)',
+            '2. Subtração de Cabos e Ameaças em Operações Noturnas (Obra 650) e Desvio de Função de ADM (Obra 664 - Vistoria 024)',
             '3. Alocação de Agente com Limitação Física / Braço Imobilizado (Obra 669 - Capão Redondo)',
             '4. Fadiga Operacional e Excesso de Jornada em Operações Consecutivas',
             '5. Tentativas de Furto e Exposição de Carga em Ermelino Matarazzo (Obra 664 - TR&S - ROs 007 e 008)'
@@ -671,7 +685,7 @@ const dadosQualitativos = {
     },
     'Always': {
         inconsistencias: [
-            '1. Ocorrência Única de RO Crítico: Subtração de Cabos e Ameaça (Obra 650-003)',
+            '1. Ocorrências Críticas de RO: Roubo Armado de Veículo/Cabos (Obra 649 - RO 008) e Subtração/Ameaça (Obra 650)',
             '2. Relatório de Vistoria 019/2026 sem Emissão de RO Efetivo (Obra 658 - Av. Coqueiral)',
             '3. Elevado Índice de Inconsistências Cadastrais em Campo (CPFs não validados)',
             '4. Alinhamento Pendente de Instruções Fotográficas para Agentes Substitutos',
@@ -691,13 +705,13 @@ const dadosQualitativos = {
             '2. Fadiga Operacional e Sono em Posto de Trabalho (Rifaina 659)',
             '3. Resistência da Equipe Técnica quanto a Registros Fotográficos (Rifaina 632)',
             '4. Tentativas de Furto Contidas em Ermelino Matarazzo (Obra 664 - ROs 007 e 008)',
-            '5. Furgões de Transporte sem Ajudantes de Carga ou Sistemas de Lacração'
+            '5. Desvio de Função e Isolamento de Agente ADM na Guarda Estática de Cabos (Obra 664 - Vistoria 024/2026)'
         ],
         mitigacoes: [
             '• Revisão Imediata de Restrições Médicas para Alocação Operacional',
             '• Controle Rigoroso de Jornadas, Descanso e Prevenção de Fadiga',
             '• Cobrança de Conformidade das Diretrizes Fotográficas com Apoio da Supervisão',
-            '• Implantação de Apoio Administrativo (ADM) e Pronta Intervenção Preventiva (Obra 664)'
+            '• Reorientação de Escopo do Agente ADM e Sincronização de Corte/Recolhimento (Obra 664 - Vistoria 024)'
         ]
     }
 };
@@ -895,7 +909,7 @@ function aplicarFiltros() {
     document.getElementById('kpiControladasAlways').innerText = alwaysControladas;
 
     document.getElementById('roTRS').innerText = trsROs + ' ROs';
-    document.getElementById('roAlways').innerText = alwaysROs + ' RO';
+    document.getElementById('roAlways').innerText = alwaysROs + (alwaysROs === 1 ? ' RO' : ' ROs');
 
     document.getElementById('cntCritico').innerText = nCritico + ' Obras';
     document.getElementById('cntAlto').innerText = nAlto + ' Obras';
